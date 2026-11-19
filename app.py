@@ -52,6 +52,63 @@ elif page == "Symptom Tracking":
   st.subheader("Symptom Tracking")
   st.write("Record and review symptom experiences.")
 
+  #initalize symptom records
+  if "symptoms" not in st.session_state:
+    st.session_state.symptoms = []
+  
+  #symptom entry form
+  with st.form("symptom_form"):
+  
+    symptom_type = st.selectbox(
+      "Symptom Type", ["Headache", "Facial Pain", "Numbness", "Tingling", "Dizziness", "Other"]
+    )
+    
+    severity = st.slider(
+      "Symptom Severity",
+      min_value = 0,
+      max_value = 10,
+      value = 5
+    )
+    
+    duration = st.number_input(
+      "Duration (minutes)",
+      min_value = 1,
+      value = 30
+    )
+    
+    symptom_date = st.date_input("Date")
+    
+    symptom_time = st.time_input("Time")
+    
+    triggers = st.text_area(
+      "Possible Triggers or Notes"
+    )
+    submitted = st.form_submit_button("Save Symptom Entry")
+    
+    if submitted:
+      symptom_record = {
+        "Type": symptom_type,
+        "Severity": severity,
+        "Duration": duration,
+        "Date": str(symptom_date),
+        "Time": str(symptom_time),
+        "Notes": triggers
+      }
+    
+      st.session_state.symptoms.append(symptom_record)
+      st.success("Symptom entry saved!")
+  
+  #display saved records
+  st.subheader ("Symptom History")
+  
+  if st.session_state.symptoms:
+    symptom_df = pd.DataFrame(st.session_state.symptoms)
+    
+    st.dataframe(symptom_df, use_container_width=True)
+  else:
+    st.info("No symptom entries recorded yet.")
+
+
 elif page == "Medication Tracking":
   st.subheader("Medication Tracking")
   st.write("Keep a structured record of medication history.")
